@@ -5,9 +5,10 @@ from forth.main import setup
 
 def parse_third(soup: BeautifulSoup):
     home_page_titles = soup.find_all('div', class_='uk-h5 title-target uk-margin-remove-bottom')
-    list_of_titles = []
     for title in home_page_titles:
-        list_of_titles.append(title.text)
+        status = check_db(title.text)
+        if not status:
+            break
 
     last_page_url = soup.find_all('font', class_='text')[1].find_all('a')[5].get(
         'href')  # получить ссылку на последнюю страницу
