@@ -21,40 +21,41 @@ def check_db(title: str) -> bool:
         return False
 
 
-def generate_fake_ua() -> UA:
-    ua = UA()
-    return ua.random
-
-
 def check_by_keywords(string: str) -> bool:
-    keywords = ['Мария', 'Марии', 'Marya', 'Марию', '2018', '2019', '2020', '2021', 'Cosmo']
+    keywords = ['Вардек']
     for word in keywords:
         if word.lower() in string.lower():
             return False
     return True
 
 
+def generate_fake_ua() -> UA:
+    ua = UA()
+    return ua.random
+
+
 def parse_second():
-    status = True
-    count = 1
+    url = 'https://vardek.ru/stati/'
 
-    url = 'https://www.marya.ru/kuhni-sovety/'
+    headers = {
+        'User-Agent': generate_fake_ua()
+    }
 
-    while status:
-        url_result = url + f'?PAGEN_3={count}'
+    data = requests.get(url, headers).text
 
-        headers = {
-                    'User-Agent': generate_fake_ua()
-                }
+    soup = BeautifulSoup(data, 'lxml')
 
-        data = requests.get(url_result, headers).text
+    count_of_pages = int(soup.findAll('a', class_='pagination__link')[-1].text)
+
+    for page in range(1, count_of_pages + 1):
+        current_url = url + f'?PAGEN_2={page}'
+
+        data = requests.get(current_url, headers).text
         soup = BeautifulSoup(data, 'lxml')
+        titles = [title.text.strip() for title in soup.findAll('h2', class_='news-list__title')]
 
-        headers = soup.findAll('div', class_='uk-h5 title-target uk-margin-remove-bottom')
-        headers = [header.text for header in headers]
-
-        for header in headers:
-            if check_by_keywords(header):
-                status = check_db(header)
-
-        count += 1
+        for title in titles:
+            if check_by_keywords(title):
+                status = check_db(title)
+                if not status:
+                    break
