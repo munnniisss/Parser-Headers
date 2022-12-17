@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
-from first.main import check_db
-from forth.main import setup
+from categories.кухни.first import check_db
+from categories.кухни.forth.main import setup
 
 
 def parse_third(soup: BeautifulSoup):

@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-from first.main import check_db
+from categories.кухни.first import check_db
 
 
 def setup(url):
